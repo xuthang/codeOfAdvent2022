@@ -26,18 +26,12 @@ public class Day12 implements Solver {
         }
     }
 
-    @Override
-    public void solve1() {
-        InputHandle input = generateIO(getFileLocationPart1());
-        Instance instance = parseGrid(input);
-
-        Map<GridPosition, Integer> D = new HashMap<>();
-        Map<GridPosition, GridPosition> P = new HashMap<>();
-
+    void bfs(Map<GridPosition, Integer> D, Map<GridPosition, GridPosition> P, Instance instance)
+    {
         Queue<GridPosition> q = new LinkedList<>();
-        q.add(instance.start);
-        D.put(instance.start, 0);
-        P.put(instance.start, instance.start);
+        q.add(instance.end);
+        D.put(instance.end, 0);
+        P.put(instance.end, instance.end);
 
         while(!q.isEmpty())
         {
@@ -51,8 +45,19 @@ public class Day12 implements Solver {
                 q.add(newPosition);
             }
         }
+    }
 
-        System.out.println(D.get(instance.end));
+    @Override
+    public void solve1() {
+        InputHandle input = generateIO(getFileLocationPart1());
+        Instance instance = parseGrid(input);
+
+        Map<GridPosition, Integer> D = new HashMap<>();
+        Map<GridPosition, GridPosition> P = new HashMap<>();
+
+        bfs(D, P, instance);
+
+        System.out.println(D.get(instance.start));
     }
 
     private List<GridPosition> generateNexts(GridPosition cur, Grid grid) {
@@ -64,7 +69,7 @@ public class Day12 implements Solver {
         ret.add(cur.add(new GridPosition(-1, 0)));
 
         return ret.stream().filter(grid::isValidPosition)
-                .filter(x -> grid.getPos(x) <= grid.getPos(cur)+1)
+                .filter(x -> grid.getPos(x) >= grid.getPos(cur)-1)
                 .collect(toList());
     }
 
